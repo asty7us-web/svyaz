@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#f6f4ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16150f" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Проверка связи</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%237d6b34'/%3E%3Cpath d='M6 15a8 8 0 0 1 12 0M8.5 17.5a4.5 4.5 0 0 1 7 0' stroke='%23ffd166' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='12' cy='19.5' r='1.3' fill='%23ffd166'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#f6f4ee;--card:#fff;--ink:#1d1b14;--mute:#6b675a;--line:#e4e0d4;--acc:#7d6b34;--acc-ink:#fff;--ok:#1f7a45;--ok-bg:#e3f4ea;--bad:#b3261e;--bad-bg:#fbe7e5;--warn:#8a5a00;--warn-bg:#fff2d6;--chip:#f0ede4}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16150f;--card:#22211a;--ink:#efece2;--mute:#a7a291;--line:#36342a;--acc:#ffd166;--acc-ink:#1d1b14;--ok:#6fd39a;--ok-bg:#183424;--bad:#ff8a80;--bad-bg:#3a1c1a;--warn:#ffcf70;--warn-bg:#3a2f14;--chip:#2c2b22}}
+:root[data-theme="dark"]{--bg:#16150f;--card:#22211a;--ink:#efece2;--mute:#a7a291;--line:#36342a;--acc:#ffd166;--acc-ink:#1d1b14;--ok:#6fd39a;--ok-bg:#183424;--bad:#ff8a80;--bad-bg:#3a1c1a;--warn:#ffcf70;--warn-bg:#3a2f14;--chip:#2c2b22}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%}
+body{padding:max(12px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+main{max-width:560px;margin:0 auto}
+h1{font-size:22px;margin:4px 0 2px}
+.sub{color:var(--mute);font-size:14px;margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 12px}
+.card h2{font-size:15px;margin:0 0 10px;color:var(--mute);font-weight:600}
+label.f{display:block;font-size:14px;color:var(--mute);margin:10px 0 6px}
+label.f:first-of-type{margin-top:0}
+input[type=text]{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:15px;padding:9px 13px;border-radius:999px;border:1px solid var(--line);background:var(--chip);color:var(--ink);min-height:40px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);font-weight:600}
+.hint{font-size:13px;color:var(--mute);margin:8px 0 0}
+.btn{display:block;width:100%;font:inherit;font-size:17px;font-weight:600;padding:14px;border-radius:12px;border:0;background:var(--acc);color:var(--acc-ink);cursor:pointer;min-height:52px}
+.btn:disabled{opacity:.45;cursor:default}
+.btn2{display:block;width:100%;font:inherit;font-size:15px;padding:11px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;margin-top:8px;min-height:44px}
+.verdict{border-radius:12px;padding:12px;margin:0 0 10px;font-weight:600}
+.verdict.ok{background:var(--ok-bg);color:var(--ok)}.verdict.bad{background:var(--bad-bg);color:var(--bad)}.verdict.warn{background:var(--warn-bg);color:var(--warn)}
+.row{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.ic{flex:0 0 28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
+.ic.ok{background:var(--ok-bg);color:var(--ok)}.ic.bad{background:var(--bad-bg);color:var(--bad)}.ic.wait{background:var(--chip);color:var(--mute)}
+.nm{flex:1;min-width:0}.nm b{display:block;font-size:15px}.nm span{display:block;font-size:12.5px;color:var(--mute)}
+.ms{text-align:right;font-variant-numeric:tabular-nums;font-size:14px;white-space:nowrap}.ms span{display:block;font-size:12px;color:var(--mute)}
+.ist{list-style:none;margin:0;padding:0}
+.ist li{display:flex;gap:8px;justify-content:space-between;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.ist li:first-child{border-top:0}
+.ist .r{white-space:nowrap;font-variant-numeric:tabular-nums}
+.st{color:var(--mute);font-size:12.5px}
+.toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:calc(100% - 32px)}
+.toast.on{opacity:1}
+.foot{font-size:12.5px;color:var(--mute);margin:14px 2px 0}
+.hide{display:none}
+.steps{margin:0;padding-left:20px;font-size:14px}.steps li{margin:2px 0}
+</style>
+</head>
+<body>
+<main>
+<h1>Проверка связи</h1>
+<p class="sub">Раз в день, 7 дней. Одна кнопка — около 20 секунд.</p>
+
+<section class="card" id="kak">
+<h2>Как</h2>
+<ol class="steps">
+<li>Выключите VPN.</li>
+<li>Нажмите «Проверить связь».</li>
+<li>Результат уходит сам. Не отправилось — ничего страшного: замер сохранён в телефоне. Откройте эту страницу ещё раз позже — он уйдёт сам.</li>
+</ol>
+</section>
+
+<section class="card">
+<h2>Кто и откуда</h2>
+<label class="f">Ваш номер — из сообщения со ссылкой</label>
+<div class="chips" id="kto" data-pole="kto"></div>
+<label class="f">Оператор</label>
+<div class="chips" id="op" data-pole="op"></div>
+<label class="f">Сейчас интернет</label>
+<div class="chips" id="set" data-pole="set"></div>
+<label class="f">VPN</label>
+<div class="chips" id="vpn" data-pole="vpn"></div>
+<p class="hint" id="hintVpn"></p>
+</section>
+
+<button class="btn" id="go" disabled>Проверить связь</button>
+<p class="hint" id="hintGo" style="text-align:center"></p>
+
+<section class="card hide" id="res" style="margin-top:12px">
+<div class="verdict" id="verdict"></div>
+<div id="rows"></div>
+<div class="verdict hide" id="ushlo" style="margin-top:12px"></div>
+</section>
+
+<section class="card" id="istCard">
+<h2 id="istZag">Замеры</h2>
+<ul class="ist" id="ist"></ul>
+<button class="btn2 hide" id="sendAll">Отправить неотправленные</button>
+</section>
+
+<p class="foot" id="foot"></p>
+<p class="foot">Здесь нет ни ключей, ни паролей. Проверка записи идёт без ключа и получает отказ — так видно, что запись доходит. На сервер уходит только результат замера: номер участника, оператор, сеть, VPN, время и коды ответов.</p>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(()=>{
+'use strict';
+const SBORKA='20.11.1228', PREDEL=15000, NEDELYA=7;
+const HOZ='asty7us-web', HRAN='svyaz';
+/* 20.11 основной чат: замер страница шлёт сама — в свою тему ntfy (только времена, коды, номер участника, оператор/сеть/VPN, время).
+   Сервер читает тему без модели (svyaz.py sobrat). Не ушло — замер в очереди на телефоне, повтор при следующем открытии. */
+const NTFY='https://ntfy.sh', TEMA='svz440bdaa658112e572ecfdba37429', PAKET=3500;
+const $=id=>document.getElementById(id);
+const LS={get(k,d){try{const v=localStorage.getItem('svz.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+          set(k,v){try{localStorage.setItem('svz.'+k,JSON.stringify(v));return true}catch(e){return false}}};
+
+const VYBOR={
+  kto:[['1','1'],['2','2'],['3','3'],['4','4'],['5','5']],
+  op:[['МТС','МТС'],['Билайн','Билайн'],['МегаФон','МегаФон'],['Т2','Т2'],['Yota','Yota'],['другой','другой']],
+  set:[['моб','Мобильный'],['wifi','Wi-Fi']],
+  vpn:[['нет','Выключен'],['да','Включён']]
+};
+const PROBY=[
+  {id:'str',k:'стр',nm:'Страница',pod:'GitHub Pages — откроется ли сервис',
+   url:()=>new URL('ping.txt?t='+Date.now(),location.href).href, opt:{cache:'no-store'}, nado:s=>s===200},
+  {id:'cht',k:'чт',nm:'Чтение',pod:'GitHub API — забрать данные',
+   url:()=>'https://api.github.com/rate_limit?t='+Date.now(), opt:{cache:'no-store'}, nado:s=>s===200},
+  {id:'zap',k:'зап',nm:'Запись',pod:'GitHub API, без ключа — ждём отказ 401/403/404',
+   url:()=>'https://api.github.com/repos/'+HOZ+'/'+HRAN+'/contents/proba/'+Date.now()+'.json',
+   opt:{method:'PUT',cache:'no-store',headers:{'Content-Type':'application/json'},body:'{"message":"proba","content":"e30="}'},
+   nado:s=>s>=400&&s<500},
+  {id:'int',k:'инт',nm:'Обычный интернет',pod:'для сравнения: ya.ru',
+   url:()=>'https://ya.ru/favicon.ico?t='+Date.now(), opt:{mode:'no-cors',cache:'no-store'}, nado:s=>s===0||s===200}
+];
+
+// ---------- устройство ----------
+let ustr=LS.get('ustr',null);
+if(!ustr){ustr=Math.random().toString(36).slice(2,6);LS.set('ustr',ustr)}
+let pervyy=LS.get('pervyy',null);
+if(!pervyy){pervyy=new Date().toISOString();LS.set('pervyy',pervyy)}
+let hranitsya='?';
+function pamyat(){
+  try{
+    if(navigator.storage&&navigator.storage.persist){
+      navigator.storage.persisted().then(p=>p?true:navigator.storage.persist()).then(p=>{hranitsya=p?'да':'нет';pokazPodval()}).catch(()=>{});
+    }
+  }catch(e){}
+}
+function dneyS(iso){return Math.floor((Date.now()-new Date(iso).getTime())/864e5)}
+// ---------- выбор ----------
+const vyb={kto:LS.get('kto',''),op:LS.get('op',''),set:'',vpn:'нет'};
+(()=>{const c=navigator.connection; if(c&&c.type==='cellular')vyb.set='моб'; else if(c&&c.type==='wifi')vyb.set='wifi';})();
+(()=>{const m=/(?:^#|&)kto=([1-5])(?:&|$)/.exec(location.hash||''); if(m){vyb.kto=m[1];LS.set('kto',m[1]);}})();   // личная ссылка …/#kto=3
+function risChips(){
+  for(const pole of Object.keys(VYBOR)){
+    const el=$(pole); el.innerHTML='';
+    for(const [v,t] of VYBOR[pole]){
+      const b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=t; b.dataset.v=v;
+      b.setAttribute('aria-pressed',vyb[pole]===v?'true':'false');
+      b.onclick=()=>{vyb[pole]=v; if(pole==='op'||pole==='kto')LS.set(pole,v); risChips(); gotovo();};
+      el.appendChild(b);
+    }
+  }
+  $('hintVpn').textContent=vyb.vpn==='да'?'С VPN замер не про нас: выключите его, если можно.':'';
+}
+function gotovo(){
+  const nehv=[]; if(!vyb.kto)nehv.push('номер'); if(!vyb.op)nehv.push('оператор'); if(!vyb.set)nehv.push('интернет сейчас');
+  $('go').disabled=idet||nehv.length>0;
+  $('hintGo').textContent=idet?'Проверяю…':nehv.length?'Выберите: '+nehv.join(', '):'';
+}
+
+// ---------- замер ----------
+let idet=false;
+async function odin(p){
+  const ac=new AbortController(); const tm=setTimeout(()=>ac.abort(),PREDEL);
+  const t0=performance.now();
+  try{
+    const r=await fetch(p.url(),Object.assign({},p.opt,{signal:ac.signal}));
+    const ms=Math.round(performance.now()-t0);
+    try{await r.text()}catch(e){}
+    return {s:r.type==='opaque'?0:r.status,ms};
+  }catch(e){
+    const ms=Math.round(performance.now()-t0);
+    return {s:-1,ms,osh:ac.signal.aborted?'время':'сеть'};
+  }finally{clearTimeout(tm)}
+}
+async function proba(p){
+  const tries=[];
+  for(let i=0;i<3;i++){
+    const r=await odin(p); tries.push(r);
+    if(r.s===-1&&i===0) break;              // не дошло с первого раза — не ждём ещё два раза по 15 с
+  }
+  const good=tries.filter(r=>r.s!==-1&&p.nado(r.s));
+  const ok=good.length>0;
+  const pot=tries.slice(1).filter(r=>r.s!==-1).map(r=>r.ms).sort((a,b)=>a-b);
+  return {ok, s:(good[0]||tries[tries.length-1]).s, osh:ok?'':(tries[tries.length-1].osh||'ответ '+tries[tries.length-1].s),
+          ms1:tries[0].ms, ms:pot.length?pot[Math.floor((pot.length-1)/2)]:null, n:tries.length, nok:good.length};
+}
+function risRows(r){
+  $('rows').innerHTML='';
+  for(const p of PROBY){
+    const x=r&&r[p.id];
+    const d=document.createElement('div'); d.className='row'; d.dataset.proba=p.id;
+    const ic=document.createElement('div'); ic.className='ic '+(!x?'wait':x.ok?'ok':'bad'); ic.textContent=!x?'…':x.ok?'✓':'✕';
+    const nm=document.createElement('div'); nm.className='nm'; nm.innerHTML='<b></b><span></span>';
+    nm.firstChild.textContent=p.nm; nm.lastChild.textContent=p.pod;
+    const ms=document.createElement('div'); ms.className='ms';
+    if(x){
+      if(x.ok){ms.textContent=x.ms1+' мс'; const s=document.createElement('span'); s.textContent=(x.ms!=null?'потом '+x.ms+' мс · ':'')+'код '+(x.s||'ок'); ms.appendChild(s);}
+      else{ms.textContent='не дошло'; const s=document.createElement('span'); s.textContent=x.osh; ms.appendChild(s);}
+    }
+    d.append(ic,nm,ms); $('rows').appendChild(d);
+  }
+}
+function vyvod(r){
+  const gh=['str','cht','zap'].every(k=>r[k].ok), nichego=['str','cht','zap','int'].every(k=>!r[k].ok);
+  if(gh) return ['ok','Всё доходит.'];
+  if(nichego) return ['bad','Интернета нет: ничего не дошло.'];
+  if(r.int.ok) return ['bad','GitHub не доходит, а обычный интернет есть.'];
+  return ['warn','Часть не дошла — смотрите строки ниже.'];
+}
+function dt(iso){const d=new Date(iso),z=n=>String(n).padStart(2,'0');return z(d.getDate())+'.'+z(d.getMonth()+1)+' '+z(d.getHours())+':'+z(d.getMinutes())}
+async function proverit(){
+  if(idet) return; idet=true; gotovo();
+  $('res').classList.remove('hide'); $('verdict').className='verdict warn'; $('verdict').textContent='Проверяю…';
+  $('ushlo').classList.add('hide');
+  risRows(null);
+  const r={};
+  for(const p of PROBY){ r[p.id]=await proba(p); risRows(r); }
+  const z={id:noviyId(), t:new Date().toISOString(), kto:vyb.kto, op:vyb.op, set:vyb.set, vpn:vyb.vpn, r,
+           pam:dneyS(pervyy), hr:hranitsya, sb:SBORKA, nt:false};
+  const ist=LS.get('ist',[]); ist.push(z); while(ist.length>80) ist.shift();
+  const sohr=LS.set('ist',ist);
+  const [kl,tx]=vyvod(r); $('verdict').className='verdict '+kl; $('verdict').textContent=tx+(sohr?'':' Сохранить на телефоне не вышло.');
+  idet=false; gotovo(); risIst();
+  const ok=await naServer(sohr?null:[z]);
+  pokazUshlo(ok,sohr);
+}
+function noviyId(){try{const a=new Uint8Array(6);crypto.getRandomValues(a);return Array.from(a,b=>b.toString(16).padStart(2,'0')).join('')}catch(e){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}}
+
+// ---------- на сервер: своя тема ntfy ----------
+function dlyaServera(z){   // только времена и коды, номер участника, оператор/сеть/VPN, время замера
+  const r={};
+  for(const p of PROBY){const x=z.r[p.id]; r[p.id]=[x.ok?1:0, x.s, x.ms1, x.ms==null?null:x.ms, x.ok?'':String(x.osh||'').slice(0,12)];}
+  return {id:z.id, k:z.kto, t:z.t, op:z.op, set:z.set, vpn:z.vpn, r};
+}
+let tsep=Promise.resolve(true);   // отправки по одной: повтор очереди при открытии и новый замер не идут разом
+function naServer(tolko){const p=tsep.then(()=>_naServer(tolko),()=>_naServer(tolko)); tsep=p.catch(()=>false); return p}
+async function _naServer(tolko){   // tolko — замеры, которых нет в памяти телефона; иначе — все неотправленные из очереди
+  {
+    const ist=tolko?null:LS.get('ist',[]);
+    const ochered=tolko||ist.filter(z=>!z.nt);
+    if(!ochered.length) return true;
+    for(const z of ochered) if(!z.id) z.id=noviyId();
+    if(ist) LS.set('ist',ist);
+    let i=0, vse=true;
+    while(i<ochered.length){
+      const paket=[]; let tx='';
+      while(i<ochered.length){
+        const s=JSON.stringify({v:'svz2',z:paket.concat([dlyaServera(ochered[i])])});
+        if(paket.length&&new TextEncoder().encode(s).length>PAKET) break;
+        paket.push(dlyaServera(ochered[i])); tx=s; i++;
+      }
+      let ok=false;
+      const ac=new AbortController(); const tm=setTimeout(()=>ac.abort(),12000);
+      try{const r=await fetch(NTFY+'/'+TEMA,{method:'POST',body:tx,cache:'no-store',signal:ac.signal}); ok=r.ok}catch(e){ok=false}
+      finally{clearTimeout(tm)}
+      if(!ok){vse=false;break}
+      const ids=new Set(paket.map(x=>x.id));
+      if(ist){const ist2=LS.get('ist',[]); for(const z of ist2) if(ids.has(z.id)) z.nt=true; LS.set('ist',ist2);}
+      else for(const z of ochered) if(ids.has(z.id)) z.nt=true;
+    }
+    risIst();
+    return vse;
+  }
+}
+const POTOM='Не отправилось — ничего страшного: замер сохранён в телефоне. Откройте эту страницу ещё раз позже — он уйдёт сам.';
+function pokazUshlo(ok,sohr){
+  const u=$('ushlo'); u.classList.remove('hide');
+  if(ok){u.className='verdict ok';u.textContent='Результат ушёл. Спасибо!'}
+  else{u.className='verdict warn';u.textContent=sohr===false?'Не отправилось, и сохранить в телефоне не вышло. Нажмите «Проверить связь» ещё раз позже.':POTOM}
+}
+
+// ---------- кнопки ----------
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),4000)}
+$('go').onclick=proverit;
+$('sendAll').onclick=async()=>{
+  const ist=LS.get('ist',[]); if(!ist.filter(z=>!z.nt).length) return;
+  $('sendAll').disabled=true;
+  const ok=await naServer(null);
+  $('sendAll').disabled=false;
+  toast(ok?'Ушло на сервер':POTOM);
+};
+
+// ---------- история ----------
+function risIst(){
+  const ist=LS.get('ist',[]); const ul=$('ist'); ul.innerHTML='';
+  const dni=new Set(ist.map(z=>z.t.slice(0,10)));
+  const ne=ist.filter(z=>!z.nt).length;
+  $('istZag').textContent=ist.length?'Замеры: день '+Math.min(dni.size,NEDELYA)+' из '+NEDELYA+(ne?' · не отправлено '+ne:''):'Замеров пока нет';
+  for(const z of ist.slice(-10).reverse()){
+    const li=document.createElement('li');
+    const okn=['str','cht','zap'].filter(k=>z.r[k]&&z.r[k].ok).length;
+    const a=document.createElement('span'); a.textContent=dt(z.t)+' · '+z.op+' · '+(z.set==='wifi'?'Wi-Fi':'моб')+(z.vpn==='да'?' · VPN':'');
+    const b=document.createElement('span'); b.className='r'; b.textContent=(okn===3?'✓ ':'✕ ')+okn+'/3'+(z.r.cht&&z.r.cht.ok?' · '+z.r.cht.ms1+' мс':'')+(z.nt?'':' · ⏳');
+    li.append(a,b); ul.appendChild(li);
+  }
+  $('sendAll').classList.toggle('hide',!ne);
+  $('sendAll').textContent='Отправить неотправленные ('+ne+')';
+}
+function pokazPodval(){
+  $('foot').textContent='Память телефона: с '+dt(pervyy).slice(0,5)+' ('+dneyS(pervyy)+' дн.)'+(hranitsya==='да'?', закреплена':hranitsya==='нет'?', не закреплена':'')+'. Устройство '+ustr+'. Сборка '+SBORKA+'.';
+}
+
+risChips(); gotovo(); risIst(); pamyat(); pokazPodval();
+if(LS.get('ist',[]).some(z=>!z.nt)) naServer(null);   // очередь с прошлых раз — один повтор при открытии
+if('serviceWorker' in navigator && location.protocol!=='file:'){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})});
+}
+})();
+</script>
+</body>
+</html>
